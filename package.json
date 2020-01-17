@@ -1,0 +1,25 @@
+{
+  "name": "tempo-epic-report",
+  "version": "1.0.0",
+  "description": "CLI program to output work logged for JIRA epics",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src/**/*.ts",
+    "dev": "tsc --watch",
+    "build": "tsc && chmod +x lib/cli.js"
+  },
+  "author": "Leif Gehrmann",
+  "license": "MIT",
+  "dependencies": {
+    "jira-client": "^6.14.0",
+    "tempo-client": "^2.0.2",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/yargs": "^15.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.16.0",
+    "@typescript-eslint/parser": "^2.16.0",
+    "eslint": "^6.8.0",
+    "typescript": "^3.7.5"
+  }
+}
