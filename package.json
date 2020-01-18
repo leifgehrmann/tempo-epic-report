@@ -1,15 +1,28 @@
 {
   "name": "tempo-epic-report",
   "version": "1.0.0",
-  "description": "CLI program to output work logged for JIRA epics",
+  "description": "Script to calculate Tempo worklog totals for JIRA epics",
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/**/*.ts",
     "dev": "tsc --watch",
     "build": "tsc && chmod +x lib/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leifgehrmann/tempo-epic-report.git"
+  },
+  "keywords": [
+    "Tempo",
+    "JIRA",
+    "Report"
+  ],
   "author": "Leif Gehrmann",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leifgehrmann/tempo-epic-report/issues"
+  },
+  "homepage": "https://github.com/leifgehrmann/tempo-epic-report#readme",
   "dependencies": {
     "jira-client": "^6.14.0",
     "tempo-client": "^2.0.2",
