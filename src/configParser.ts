@@ -6,6 +6,7 @@ interface Config {
   jiraPassword: string;
   jiraEpicCustomFieldKey: string;
   tempoApiBearerToken: string;
+  hoursInDay: number;
 }
 
 function throwError(error: string): never {
@@ -30,6 +31,9 @@ export default function parse(configFilePath: string): Config {
     throwError('jiraEpicCustomFieldKey is not a string');
   }
   if (typeof rawConfigData.tempoApiBearerToken !== 'string') {
+    throwError('tempoApiBearerToken is not a string');
+  }
+  if (typeof rawConfigData.hoursInDay !== 'number') {
     throwError('tempoApiBearerToken is not a string');
   }
   return rawConfigData as Config;

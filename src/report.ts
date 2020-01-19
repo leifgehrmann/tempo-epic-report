@@ -5,7 +5,12 @@ import UserRepository from './userRepository';
 import WorklogRepository from './worklogRepository';
 import User from './user';
 
-type IssueKey = string;
+interface EpicsTotalTimeReport {
+  [key: string]: {
+    epicIssue: IssueObject;
+    totalTimeSpentSeconds: number;
+  };
+}
 
 interface ReportQuery {
   usernames: string[];
@@ -26,7 +31,7 @@ export default class Report {
 
   private readonly issueCache: { [key: string]: IssueObject };
 
-  private readonly issueEpicMap: { [key: string]: IssueKey };
+  private readonly epicsTotalTime: EpicsTotalTimeReport;
 
   constructor(jiraClient: JiraApi, tempoClient: TempoApi, jiraEpicCustomFieldKey: string) {
     this.jiraClient = jiraClient;
@@ -35,10 +40,10 @@ export default class Report {
     this.userRepository = new UserRepository(this.jiraClient);
     this.worklogRepository = new WorklogRepository(this.tempoClient);
     this.issueCache = {};
-    this.issueEpicMap = {};
+    this.epicsTotalTime = {};
   }
 
-  async execute(reportQuery: ReportQuery): Promise<string> {
+  async execute(reportQuery: ReportQuery): Promise<EpicsTotalTimeReport> {
     // 1. Fetch the usernames from JIRA
     const users = await this.userRepository.getUsersByUsernames(reportQuery.usernames);
 
@@ -46,14 +51,28 @@ export default class Report {
     const allWorklogs = await this.fetchWorklogsForUsers(users, reportQuery);
 
     // 3. For each worklog, fetch the issue
-    const issues = await this.fetchIssuesForWorklogs(allWorklogs);
+    await this.fetchIssuesForWorklogs(allWorklogs);
 
     // 4. For each issue, fetch the epic
-    // const epics = await this.fetchEpicsForWorklogs();
+    await this.fetchParentsForIssues(Object.values(this.issueCache));
 
-    // 5. Accumulate the worklog timings for each worklog, grouped by epic or issue
+    // 5. For each issue, fetch the parent
+    await this.fetchEpicsForIssues(Object.values(this.issueCache));
 
-    return JSON.stringify(issues);
+    // 6. Accumulate the worklog timings for each worklog, grouped by epic or issue
+    allWorklogs.forEach((worklog) => {
+      const issue = this.getCachedIssueByKey(worklog.issue.key);
+      const epicIssue = this.getCachedEpicOrMainIssueForIssue(issue);
+      if (!(epicIssue.key in this.epicsTotalTime)) {
+        this.epicsTotalTime[epicIssue.key] = {
+          epicIssue,
+          totalTimeSpentSeconds: 0,
+        };
+      }
+      this.epicsTotalTime[epicIssue.key].totalTimeSpentSeconds += worklog.timeSpentSeconds;
+    });
+
+    return this.epicsTotalTime;
   }
 
   async fetchWorklogsForUsers(users: User[], reportQuery: ReportQuery): Promise<WorklogResponse[]> {
@@ -87,9 +106,33 @@ export default class Report {
     return Promise.all(issuesPromise);
   }
 
-  // async fetchEpicsForIssues(issues: IssueObject[]) {
-  //
-  // }
+  async fetchParentsForIssues(issues: IssueObject[]): Promise<(IssueObject|null)[]> {
+    const parentIssuesPromise = issues.map(
+      (issue) => {
+        const parentIssueKey = issue.fields.parent?.key;
+        if (parentIssueKey === undefined) {
+          return Promise.resolve(null);
+        }
+        return this.fetchIssue(parentIssueKey);
+      },
+    );
+
+    return Promise.all(parentIssuesPromise);
+  }
+
+  async fetchEpicsForIssues(issues: IssueObject[]): Promise<(IssueObject|null)[]> {
+    const epicIssuesPromise = issues.map(
+      (issue) => {
+        const epicIssueKey = issue.fields[this.jiraEpicCustomFieldKey];
+        if (epicIssueKey === null) {
+          return Promise.resolve(null);
+        }
+        return this.fetchIssue(epicIssueKey);
+      },
+    );
+
+    return Promise.all(epicIssuesPromise);
+  }
 
   async fetchIssue(issueKey: string): Promise<IssueObject> {
     if (issueKey in this.issueCache) {
@@ -97,6 +140,25 @@ export default class Report {
     }
     const issue = await this.jiraClient.findIssue(issueKey);
     this.issueCache[issueKey] = issue;
+    return issue;
+  }
+
+  getCachedIssueByKey(issueKey: string): IssueObject {
+    if (!(issueKey in this.issueCache)) {
+      throw Error(`Cache did not have issueKey: ${issueKey}`);
+    }
+    return this.issueCache[issueKey];
+  }
+
+  getCachedEpicOrMainIssueForIssue(issue: IssueObject): IssueObject {
+    const parentIssueKey = issue.fields?.parent?.key;
+    if (parentIssueKey !== undefined) {
+      return this.getCachedEpicOrMainIssueForIssue(this.getCachedIssueByKey(parentIssueKey));
+    }
+    const epicIssueKey = issue.fields[this.jiraEpicCustomFieldKey];
+    if (epicIssueKey !== null) {
+      return this.getCachedIssueByKey(epicIssueKey);
+    }
     return issue;
   }
 }

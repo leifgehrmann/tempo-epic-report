@@ -74,7 +74,12 @@ report.execute(
     from,
     to,
   },
-).then((output) => {
-  // eslint-disable-next-line no-console
-  console.log(output);
+).then((epicsTotalTimeReport) => {
+  Object.values(epicsTotalTimeReport).forEach((epicTotalTimeReport) => {
+    const epicName = epicTotalTimeReport.epicIssue.fields.summary;
+    const totalTimeInSeconds = epicTotalTimeReport.totalTimeSpentSeconds;
+    const totalTimeInDays = (totalTimeInSeconds / (60 * 60 * config.hoursInDay)).toFixed(1);
+    // eslint-disable-next-line no-console
+    console.log(`[${totalTimeInDays} days] ${epicName}`);
+  });
 });
