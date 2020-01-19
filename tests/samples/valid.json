@@ -1,0 +1,6 @@
+{
+  "jiraHost": "www.example.com",
+  "jiraUsername": "user@example.com",
+  "jiraPassword": "myPassword",
+  "tempoApiBearerToken": "myToken"
+}
