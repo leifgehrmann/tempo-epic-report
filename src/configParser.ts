@@ -4,6 +4,7 @@ interface Config {
   jiraHost: string;
   jiraUsername: string;
   jiraPassword: string;
+  jiraEpicCustomFieldKey: string;
   tempoApiBearerToken: string;
 }
 
@@ -24,6 +25,9 @@ export default function parse(configFilePath: string): Config {
   }
   if (typeof rawConfigData.jiraPassword !== 'string') {
     throwError('jiraPassword is not a string');
+  }
+  if (typeof rawConfigData.jiraEpicCustomFieldKey !== 'string') {
+    throwError('jiraEpicCustomFieldKey is not a string');
   }
   if (typeof rawConfigData.tempoApiBearerToken !== 'string') {
     throwError('tempoApiBearerToken is not a string');

@@ -67,7 +67,7 @@ const from = new Date(argv['start-date']);
 const to = new Date(argv['end-date']);
 const usernames = argv.usernames.split(',');
 
-const report = new Report(jira, tempo);
+const report = new Report(jira, tempo, config.jiraEpicCustomFieldKey);
 report.execute(
   {
     usernames,
