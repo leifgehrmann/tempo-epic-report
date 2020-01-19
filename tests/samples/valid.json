@@ -2,5 +2,7 @@
   "jiraHost": "www.example.com",
   "jiraUsername": "user@example.com",
   "jiraPassword": "myPassword",
-  "tempoApiBearerToken": "myToken"
+  "jiraEpicCustomFieldKey": "customfield_12345",
+  "tempoApiBearerToken": "myToken",
+  "hoursInDay": 7
 }

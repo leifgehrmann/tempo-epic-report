@@ -1,5 +1,6 @@
 {
   "jiraHost": "www.example.com",
   "jiraUsername": "user@example.com",
-  "jiraPassword": "myPassword"
+  "jiraPassword": "myPassword",
+  "jiraEpicCustomFieldKey": "customfield_12345"
 }
