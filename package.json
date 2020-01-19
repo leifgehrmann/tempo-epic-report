@@ -27,7 +27,7 @@
   "homepage": "https://github.com/leifgehrmann/tempo-epic-report#readme",
   "dependencies": {
     "jira-client": "^6.14.0",
-    "tempo-client": "^2.0.2",
+    "tempo-client": "^3.0.0",
     "yargs": "^15.1.0"
   },
   "devDependencies": {

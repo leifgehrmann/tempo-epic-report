@@ -1,10 +1,5 @@
 import JiraApi from 'jira-client';
-
-interface User {
-  displayName: string;
-  accountId: string;
-  username: string;
-}
+import User from './user';
 
 export default class UserRepository {
   private readonly jiraClient: JiraApi;

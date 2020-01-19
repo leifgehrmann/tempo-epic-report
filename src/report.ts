@@ -1,6 +1,8 @@
 import TempoApi from 'tempo-client';
+import { WorklogResponse } from 'tempo-client/lib/responseTypes';
 import JiraApi from 'jira-client';
 import UserRepository from './userRepository';
+import WorklogRepository from './worklogRepository';
 
 interface ReportQuery {
   usernames: string[];
@@ -21,19 +23,28 @@ export default class Report {
   async execute(reportQuery: ReportQuery): Promise<string> {
     // 1. Fetch the usernames from JIRA
     const userRepository = new UserRepository(this.jiraClient);
+    const worklogRepository = new WorklogRepository(this.tempoClient);
     const users = await userRepository.getUsersByUsernames(reportQuery.usernames);
 
-    const worklogs: string[] = [];
-    users.forEach((user) => {
-      worklogs.push(user.displayName);
+    const allWorklogs: WorklogResponse[] = [];
+
+    // 2. Fetch all the worklogs for each username
+    const userWorklogsPromise = users.map((user) => worklogRepository.getWorklogsForUserInDateRange(
+      user,
+      reportQuery.from,
+      reportQuery.to,
+    ));
+
+    const usersWorklogs = await Promise.all(userWorklogsPromise);
+
+    usersWorklogs.forEach((userWorklogs) => {
+      allWorklogs.push(...userWorklogs);
     });
 
-    // 4. Fetch all the worklogs for the usernames
+    // 3. For each worklog, fetch the issue
+    // 4. For each issue, fetch the epic
+    // 5. Accumulate the worklog timings for each worklog, grouped by epic or issue
 
-    // 5. For each worklog, fetch the issue
-    // 6. For each issue, fetch the epic
-    // 7. Accumulate the worklog timings for each worklog, grouped by epic or issue
-
-    return JSON.stringify(worklogs);
+    return JSON.stringify(allWorklogs);
   }
 }
