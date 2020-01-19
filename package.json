@@ -4,7 +4,8 @@
   "description": "Script to calculate Tempo worklog totals for JIRA epics",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint --ext .ts 'src/**/*.ts'",
+    "format": "eslint --ext .ts --fix 'src/**/*.ts'",
     "dev": "tsc --watch",
     "build": "tsc && chmod +x lib/cli.js"
   },
@@ -29,10 +30,12 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
+    "@types/jira-client": "^6.13.1",
     "@types/yargs": "^15.0.0",
     "@typescript-eslint/eslint-plugin": "^2.16.0",
-    "@typescript-eslint/parser": "^2.16.0",
     "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^6.3.1",
+    "eslint-plugin-import": "^2.20.0",
     "typescript": "^3.7.5"
   }
 }
