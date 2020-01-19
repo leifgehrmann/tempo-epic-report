@@ -13,12 +13,12 @@ First, create a JSON file anywhere with the following details:
 
 ```json
 {
-  "jiraHost": "[yourDomain].atlassian.net", // <-- Your Jira cloud/self-managed instance
-  "jiraUsername": "user@example.com", // <-- Your username
-  "jiraPassword": "myJiraToken", // <-- The token generated from Jira
-  "jiraEpicCustomFieldKey": "customfield_12345", // <-- The custom field that identifies an epic
-  "tempoApiBearerToken": "myTempoToken", // <-- The token generated from Tempo 
-  "hoursInDay": 7 // <-- Number of hours in a day
+  "jiraHost": "[yourDomain].atlassian.net",
+  "jiraUsername": "user@example.com",
+  "jiraPassword": "myJiraToken",
+  "jiraEpicCustomFieldKey": "customfield_12345",
+  "tempoApiBearerToken": "myTempoToken", 
+  "hoursInDay": 6.5
 }
 ```
 
@@ -31,7 +31,7 @@ It will normally look something like `"customfield_10001": "JT-123"`.
 
 #### Install
 
-Then install and run!
+Checkout this repo, then install and build (NPM/Node required):
 
 ```shell script
 $ npm install
