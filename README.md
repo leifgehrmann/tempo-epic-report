@@ -1,5 +1,10 @@
 # Tempo Weekly Epic Report
 
+[![Build Status](https://github.com/leifgehrmann/tempo-epic-report/workflows/Tests/badge.svg?branch=master)](https://github.com/leifgehrmann/tempo-epic-report/actions)
+[![Code Coverage](https://codecov.io/gh/leifgehrmann/tempo-epic-report/branch/master/graph/badge.svg)](https://codecov.io/gh/leifgehrmann/tempo-epic-report)
+[![dependency Status](https://david-dm.org/leifgehrmann/tempo-epic-report/status.svg)](https://david-dm.org/leifgehrmann/tempo-epic-report)
+[![devDependency Status](https://david-dm.org/leifgehrmann/tempo-epic-report/dev-status.svg)](https://david-dm.org/leifgehrmann/tempo-epic-report?type=dev)
+
 Script to calculate [Tempo] worklog totals for [JIRA] epics.
 
 [Tempo]: https://www.tempo.io
