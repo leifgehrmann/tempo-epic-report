@@ -4,6 +4,7 @@ import JiraApi, { IssueObject } from 'jira-client';
 import UserRepository from './userRepository';
 import WorklogRepository from './worklogRepository';
 import User from './user';
+import IssueRepository from './issueRepository';
 
 interface EpicsTotalTimeReport {
   [key: string]: {
@@ -27,6 +28,8 @@ export default class Report {
 
   private readonly userRepository: UserRepository;
 
+  private readonly issueRepository: IssueRepository;
+
   private readonly worklogRepository: WorklogRepository;
 
   private readonly issueCache: { [key: string]: IssueObject };
@@ -38,6 +41,7 @@ export default class Report {
     this.tempoClient = tempoClient;
     this.jiraEpicCustomFieldKey = jiraEpicCustomFieldKey;
     this.userRepository = new UserRepository(this.jiraClient);
+    this.issueRepository = new IssueRepository(this.jiraClient);
     this.worklogRepository = new WorklogRepository(this.tempoClient);
     this.issueCache = {};
     this.epicsTotalTime = {};
@@ -141,7 +145,7 @@ export default class Report {
     if (issueKey in this.issueCache) {
       return Promise.resolve(this.issueCache[issueKey]);
     }
-    const issue = await this.jiraClient.findIssue(issueKey);
+    const issue = await this.issueRepository.fetchIssue(issueKey);
     this.issueCache[issueKey] = issue;
     return issue;
   }
