@@ -75,7 +75,10 @@ export default class Report {
     return this.epicsTotalTime;
   }
 
-  async fetchWorklogsForUsers(users: User[], reportQuery: ReportQuery): Promise<WorklogResponse[]> {
+  private async fetchWorklogsForUsers(
+    users: User[],
+    reportQuery: ReportQuery,
+  ): Promise<WorklogResponse[]> {
     const allWorklogs: WorklogResponse[] = [];
 
     const userWorklogsPromise = users.map(
@@ -95,7 +98,7 @@ export default class Report {
     return allWorklogs;
   }
 
-  async fetchIssuesForWorklogs(worklogs: WorklogResponse[]): Promise<IssueObject[]> {
+  private async fetchIssuesForWorklogs(worklogs: WorklogResponse[]): Promise<IssueObject[]> {
     const issuesPromise = worklogs.map(
       (worklog) => {
         const issueKey = worklog.issue.key;
@@ -106,7 +109,7 @@ export default class Report {
     return Promise.all(issuesPromise);
   }
 
-  async fetchParentsForIssues(issues: IssueObject[]): Promise<(IssueObject|null)[]> {
+  private async fetchParentsForIssues(issues: IssueObject[]): Promise<(IssueObject|null)[]> {
     const parentIssuesPromise = issues.map(
       (issue) => {
         const parentIssueKey = issue.fields.parent?.key;
@@ -120,7 +123,7 @@ export default class Report {
     return Promise.all(parentIssuesPromise);
   }
 
-  async fetchEpicsForIssues(issues: IssueObject[]): Promise<(IssueObject|null)[]> {
+  private async fetchEpicsForIssues(issues: IssueObject[]): Promise<(IssueObject|null)[]> {
     const epicIssuesPromise = issues.map(
       (issue) => {
         const epicIssueKey = issue.fields[this.jiraEpicCustomFieldKey];
@@ -134,7 +137,7 @@ export default class Report {
     return Promise.all(epicIssuesPromise);
   }
 
-  async fetchIssue(issueKey: string): Promise<IssueObject> {
+  private async fetchIssue(issueKey: string): Promise<IssueObject> {
     if (issueKey in this.issueCache) {
       return Promise.resolve(this.issueCache[issueKey]);
     }
@@ -143,14 +146,14 @@ export default class Report {
     return issue;
   }
 
-  getCachedIssueByKey(issueKey: string): IssueObject {
+  private getCachedIssueByKey(issueKey: string): IssueObject {
     if (!(issueKey in this.issueCache)) {
       throw Error(`Cache did not have issueKey: ${issueKey}`);
     }
     return this.issueCache[issueKey];
   }
 
-  getCachedEpicOrMainIssueForIssue(issue: IssueObject): IssueObject {
+  private getCachedEpicOrMainIssueForIssue(issue: IssueObject): IssueObject {
     const parentIssueKey = issue.fields?.parent?.key;
     if (parentIssueKey !== undefined) {
       return this.getCachedEpicOrMainIssueForIssue(this.getCachedIssueByKey(parentIssueKey));
