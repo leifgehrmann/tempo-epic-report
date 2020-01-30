@@ -1,7 +1,12 @@
 import JiraApi from 'jira-client';
 import User from './user';
 
-export default class UserRepository {
+export interface UserRepositoryInterface {
+  getUserByUsername(username: string): Promise<User>;
+  getUsersByUsernames(usernames: string[]): Promise<User[]>;
+}
+
+export default class UserRepository implements UserRepositoryInterface {
   private readonly jiraClient: JiraApi;
 
   constructor(jiraClient: JiraApi) {

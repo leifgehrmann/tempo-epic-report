@@ -1,13 +1,21 @@
 import { WorklogResponse } from 'tempo-client/lib/responseTypes';
 import TempoApi from 'tempo-client';
 import User from './user';
-import paginate from './paginatedResultSetAutoPaginator';
+import paginate from './autoPaginator';
 
 function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
-export default class WorklogRepository {
+export interface WorklogRepositoryInterface {
+  getWorklogsForUserInDateRange(
+    user: User,
+    from: Date,
+    to: Date,
+  ): Promise<WorklogResponse[]>;
+}
+
+export default class WorklogRepository implements WorklogRepositoryInterface {
   private readonly tempoClient: TempoApi;
 
   constructor(tempoClient: TempoApi) {

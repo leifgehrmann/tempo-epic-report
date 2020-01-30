@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
-import TempoApi from 'tempo-client';
-import JiraApi from 'jira-client';
 import parse from './configParser';
-import Report from './report';
+import App from './app';
 
 const validateDate = (dateString: string): void => {
   const date = Date.parse(dateString);
@@ -44,42 +42,16 @@ const { argv } = yargs
     return true;
   });
 
-// 1. Parse CLI arguments
 const config = parse(argv.config);
+const app = new App(config);
 
-// 2. Instantiate node and tempo clients
-const jira = new JiraApi({
-  protocol: 'https',
-  host: config.jiraHost,
-  username: config.jiraUsername,
-  password: config.jiraPassword,
-  apiVersion: '2',
-  strictSSL: true,
-});
-const tempo = new TempoApi({
-  protocol: 'https',
-  host: 'api.tempo.io',
-  bearerToken: config.tempoApiBearerToken,
-  apiVersion: '3',
-});
+const reportQuery = {
+  usernames: argv.usernames.split(','),
+  from: new Date(argv['start-date']),
+  to: new Date(argv['end-date']),
+};
 
-const from = new Date(argv['start-date']);
-const to = new Date(argv['end-date']);
-const usernames = argv.usernames.split(',');
-
-const report = new Report(jira, tempo, config.jiraEpicCustomFieldKey);
-report.execute(
-  {
-    usernames,
-    from,
-    to,
-  },
-).then((epicsTotalTimeReport) => {
-  Object.values(epicsTotalTimeReport).forEach((epicTotalTimeReport) => {
-    const epicName = epicTotalTimeReport.epicIssue.fields.summary;
-    const totalTimeInSeconds = epicTotalTimeReport.totalTimeSpentSeconds;
-    const totalTimeInDays = (totalTimeInSeconds / (60 * 60 * config.hoursInDay)).toFixed(1);
-    // eslint-disable-next-line no-console
-    console.log(`[${totalTimeInDays} days] ${epicName}`);
-  });
+app.execute(reportQuery).then((result) => {
+  // eslint-disable-next-line no-console
+  console.log(result);
 });

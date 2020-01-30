@@ -1,6 +1,10 @@
 import JiraApi, { IssueObject } from 'jira-client';
 
-export default class IssueRepository {
+export interface IssueRepositoryInterface {
+  fetchIssue(issueKey: string): Promise<IssueObject>;
+}
+
+export default class IssueRepository implements IssueRepositoryInterface {
   private readonly jiraClient: JiraApi;
 
   constructor(jiraClient: JiraApi) {

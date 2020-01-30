@@ -1,13 +1,5 @@
 import fs from 'fs';
-
-interface Config {
-  jiraHost: string;
-  jiraUsername: string;
-  jiraPassword: string;
-  jiraEpicCustomFieldKey: string;
-  tempoApiBearerToken: string;
-  hoursInDay: number;
-}
+import Config from './config';
 
 function throwError(error: string): never {
   throw Error(`Failed to parse config: ${error}`);

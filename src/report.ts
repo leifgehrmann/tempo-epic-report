@@ -1,7 +1,5 @@
-import TempoApi from 'tempo-client';
 import { WorklogResponse } from 'tempo-client/lib/responseTypes';
-import JiraApi, { IssueObject } from 'jira-client';
-import UserRepository from './userRepository';
+import { IssueObject } from 'jira-client';
 import WorklogRepository from './worklogRepository';
 import User from './user';
 import IssueRepository from './issueRepository';
@@ -14,19 +12,13 @@ interface EpicsTotalTimeReport {
 }
 
 interface ReportQuery {
-  usernames: string[];
+  users: User[];
   from: Date;
   to: Date;
 }
 
 export default class Report {
-  private readonly jiraClient: JiraApi;
-
-  private readonly tempoClient: TempoApi;
-
   private readonly jiraEpicCustomFieldKey: string;
-
-  private readonly userRepository: UserRepository;
 
   private readonly issueRepository: IssueRepository;
 
@@ -36,34 +28,32 @@ export default class Report {
 
   private readonly epicsTotalTime: EpicsTotalTimeReport;
 
-  constructor(jiraClient: JiraApi, tempoClient: TempoApi, jiraEpicCustomFieldKey: string) {
-    this.jiraClient = jiraClient;
-    this.tempoClient = tempoClient;
+  constructor(
+    issueRepository: IssueRepository,
+    worklogRepository: WorklogRepository,
+    jiraEpicCustomFieldKey: string,
+  ) {
+    this.issueRepository = issueRepository;
+    this.worklogRepository = worklogRepository;
     this.jiraEpicCustomFieldKey = jiraEpicCustomFieldKey;
-    this.userRepository = new UserRepository(this.jiraClient);
-    this.issueRepository = new IssueRepository(this.jiraClient);
-    this.worklogRepository = new WorklogRepository(this.tempoClient);
     this.issueCache = {};
     this.epicsTotalTime = {};
   }
 
   async execute(reportQuery: ReportQuery): Promise<EpicsTotalTimeReport> {
-    // 1. Fetch the usernames from JIRA
-    const users = await this.userRepository.getUsersByUsernames(reportQuery.usernames);
+    // 1. Fetch all the worklogs for each username
+    const allWorklogs = await this.fetchWorklogsForUsers(reportQuery.users, reportQuery);
 
-    // 2. Fetch all the worklogs for each username
-    const allWorklogs = await this.fetchWorklogsForUsers(users, reportQuery);
-
-    // 3. For each worklog, fetch the issue
+    // 2. For each worklog, fetch the issue
     await this.fetchIssuesForWorklogs(allWorklogs);
 
-    // 4. For each issue, fetch the epic
+    // 3. For each issue, fetch the epic
     await this.fetchParentsForIssues(Object.values(this.issueCache));
 
-    // 5. For each issue, fetch the parent
+    // 4. For each issue, fetch the parent
     await this.fetchEpicsForIssues(Object.values(this.issueCache));
 
-    // 6. Accumulate the worklog timings for each worklog, grouped by epic or issue
+    // 5. Accumulate the worklog timings for each worklog, grouped by epic or issue
     allWorklogs.forEach((worklog) => {
       const issue = this.getCachedIssueByKey(worklog.issue.key);
       const epicIssue = this.getCachedEpicOrMainIssueForIssue(issue);
