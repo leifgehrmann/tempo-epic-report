@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
+import fs from 'fs';
 import parse from './configParser';
 import App from './app';
 
@@ -42,7 +43,8 @@ const { argv } = yargs
     return true;
   });
 
-const config = parse(argv.config);
+const configText = fs.readFileSync(argv.config).toString();
+const config = parse(configText);
 const app = new App(config);
 
 const reportQuery = {

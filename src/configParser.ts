@@ -1,14 +1,13 @@
-import fs from 'fs';
 import Config from './config';
 
 function throwError(error: string): never {
   throw Error(`Failed to parse config: ${error}`);
 }
 
-export default function parse(configFilePath: string): Config {
-  const rawConfigData = JSON.parse(fs.readFileSync(configFilePath).toString());
+export default function parse(configText: string): Config {
+  const rawConfigData = JSON.parse(configText);
   if (typeof rawConfigData !== 'object') {
-    throwError('Config is not an array');
+    throwError('Config is not an object');
   }
   if (typeof rawConfigData.jiraHost !== 'string') {
     throwError('jiraHost is not a string');
@@ -26,7 +25,7 @@ export default function parse(configFilePath: string): Config {
     throwError('tempoApiBearerToken is not a string');
   }
   if (typeof rawConfigData.hoursInDay !== 'number') {
-    throwError('tempoApiBearerToken is not a string');
+    throwError('hoursInDay is not a number');
   }
   return rawConfigData as Config;
 }
