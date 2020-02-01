@@ -121,7 +121,7 @@ export default class Report {
     const epicIssuesPromise = issues.map(
       (issue) => {
         const epicIssueKey = issue.fields[this.jiraEpicCustomFieldKey];
-        if (epicIssueKey === null) {
+        if (epicIssueKey === undefined || epicIssueKey === null) {
           return Promise.resolve(null);
         }
         return this.fetchIssue(epicIssueKey);
@@ -149,11 +149,11 @@ export default class Report {
 
   private getCachedEpicOrMainIssueForIssue(issue: IssueObject): IssueObject {
     const parentIssueKey = issue.fields?.parent?.key;
-    if (parentIssueKey !== undefined) {
+    if (parentIssueKey !== null && parentIssueKey !== undefined) {
       return this.getCachedEpicOrMainIssueForIssue(this.getCachedIssueByKey(parentIssueKey));
     }
     const epicIssueKey = issue.fields[this.jiraEpicCustomFieldKey];
-    if (epicIssueKey !== null) {
+    if (epicIssueKey !== null && epicIssueKey !== undefined) {
       return this.getCachedIssueByKey(epicIssueKey);
     }
     return issue;
