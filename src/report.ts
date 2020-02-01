@@ -4,7 +4,7 @@ import WorklogRepository from './worklogRepository';
 import User from './user';
 import IssueRepository from './issueRepository';
 
-interface EpicsTotalTimeReport {
+export interface EpicsTotalTimeReport {
   [key: string]: {
     epicIssue: IssueObject;
     totalTimeSpentSeconds: number;

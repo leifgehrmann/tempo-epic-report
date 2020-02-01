@@ -5,6 +5,7 @@ import WorklogRepository from './worklogRepository';
 import UserRepository from './userRepository';
 import IssueRepository from './issueRepository';
 import Report from './report';
+import formatReport from './formatReport';
 
 interface AppArguments {
   usernames: string[];
@@ -43,8 +44,6 @@ export default class App {
   }
 
   async execute(args: AppArguments): Promise<string> {
-    const output: string[] = [];
-
     const users = await this.userRepository.getUsersByUsernames(args.usernames);
 
     const report = new Report(
@@ -61,13 +60,6 @@ export default class App {
       },
     );
 
-    Object.values(epicsTotalTimeReport).forEach((epicTotalTimeReport) => {
-      const epicName = epicTotalTimeReport.epicIssue.fields.summary;
-      const totalTimeInSeconds = epicTotalTimeReport.totalTimeSpentSeconds;
-      const totalTimeInDays = (totalTimeInSeconds / (60 * 60 * this.config.hoursInDay)).toFixed(1);
-      output.push(`[${totalTimeInDays} days] ${epicName}`);
-    });
-
-    return output.join('\n');
+    return formatReport(epicsTotalTimeReport, this.config.hoursInDay);
   }
 }

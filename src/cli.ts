@@ -4,16 +4,7 @@ import yargs from 'yargs';
 import fs from 'fs';
 import parse from './configParser';
 import App from './app';
-
-const validateDate = (dateString: string): void => {
-  const date = Date.parse(dateString);
-  if (Number.isNaN(date)) {
-    throw new Error(
-      `Invalid date: ${dateString}. `
-      + 'Must be of format YYYY-MM-DD.',
-    );
-  }
-};
+import validateDate from './validateDate';
 
 const { argv } = yargs
   .help()
