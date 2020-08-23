@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/leifgehrmann/tempo-epic-report#readme",
   "dependencies": {
-    "jira-client": "^6.18.0",
-    "tempo-client": "^3.1.1",
+    "jira-client": "^6.19.0",
+    "tempo-client": "^3.1.2",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
@@ -38,9 +38,9 @@
     "eslint": "^7.7.0",
     "eslint-config-airbnb-typescript": "^9.0.0",
     "eslint-plugin-import": "^2.22.0",
-    "jest": "^26.4.0",
-    "jest-mock-extended": "^1.0.9",
+    "jest": "^26.4.2",
+    "jest-mock-extended": "^1.0.10",
     "ts-jest": "^26.2.0",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.2"
   }
 }
