@@ -5,6 +5,8 @@
 [![dependency Status](https://david-dm.org/leifgehrmann/tempo-epic-report/status.svg)](https://david-dm.org/leifgehrmann/tempo-epic-report)
 [![devDependency Status](https://david-dm.org/leifgehrmann/tempo-epic-report/dev-status.svg)](https://david-dm.org/leifgehrmann/tempo-epic-report?type=dev)
 
+**This project is no longer maintained. Feel free to fork. If it is useful to anyone, let me know!**
+
 Script to calculate [Tempo] worklog totals for [JIRA] epics.
 
 [Tempo]: https://www.tempo.io
